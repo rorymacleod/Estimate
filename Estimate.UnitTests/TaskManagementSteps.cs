@@ -1,58 +1,68 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Estimate.Domain;
 using FluentAssertions;
+using Xunit.Abstractions;
 
 namespace Estimate.UnitTests;
 
-public class TaskManagementSteps : IDisposable
+public class TaskManagementSteps: StepsBase
 {
     private readonly InMemoryDriver Driver = new();
 
-    public void Dispose()
+    public TaskManagementSteps(ITestOutputHelper output) : base(output)
     {
     }
 
     public void GivenAnEmptyTaskList()
     {
-    }
-
-    public void ThenTaskListCountIs(int expected)
-    {
-        var taskList = this.Driver.GetTaskList();
-        taskList.Count.Should().Be(expected);
-    }
-
-    public void WhenATaskIsAdded()
-    {
-        this.Driver.AddTask(new Task(string.Empty));
+        this.Given("an empty task list");
     }
 
     public void GivenTask(string title)
     {
+        this.Given($"a task \"{title}\"");
         this.Driver.AddTask(new Task(title));
     }
 
-    public void WhenTaskIsRemoved(string id)
+    public void WhenATaskIsAdded()
     {
-        this.Driver.RemoveTaskByTitle(id);
+        this.When("a task is added");
+        this.Driver.AddTask(new Task(string.Empty));
     }
 
-    public void ThenTaskListContainsTask(string id)
+    public void WhenTaskIsRemoved(string title)
     {
-        var task = this.Driver.FindTask(id);
-        task.Should().NotBeNull();
-    }
-
-    public void ThenTaskListDoesNotContainTask(string id)
-    {
-        var task = this.Driver.FindTask(id);
-        task.Should().BeNull();
+        this.When($"the \"{title}\" task is removed");
+        this.Driver.RemoveTaskByTitle(title);
     }
 
     public void WhenANewSessionIsStarted()
     {
+        this.When("a new session is started");
         this.Driver.Restart();
+    }
+
+    public void ThenTaskListCountIs(int expected)
+    {
+        this.Then($"the task list count is {expected}");
+
+        var taskList = this.Driver.GetTaskList();
+        taskList.Count.Should().Be(expected);
+    }
+
+    public void ThenTaskListContainsTask(string title)
+    {
+        this.Then($"the list contains \"{title}\"");
+
+        var task = this.Driver.FindTask(title);
+        task.Should().NotBeNull();
+    }
+
+    public void ThenTaskListDoesNotContainTask(string title)
+    {
+        this.Then($"the list does not contain \"{title}\"");
+
+        var task = this.Driver.FindTask(title);
+        task.Should().BeNull();
     }
 }
