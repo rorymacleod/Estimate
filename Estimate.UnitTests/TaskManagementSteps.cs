@@ -15,6 +15,7 @@ public class TaskManagementSteps: StepsBase
 
     public void GivenAnEmptyTaskList()
     {
+        this.Driver.GetTaskList();
         this.Given("an empty task list");
     }
 

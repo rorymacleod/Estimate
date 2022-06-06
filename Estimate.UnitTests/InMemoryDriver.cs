@@ -6,7 +6,7 @@ using Estimate.Domain;
 
 namespace Estimate.UnitTests;
 
-public class InMemoryDriver
+public class InMemoryDriver : IDriver
 {
     private readonly InMemoryTaskStoreFactory Factory = new();
     private TaskList Tasks;
